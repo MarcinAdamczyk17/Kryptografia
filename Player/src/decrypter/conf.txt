@@ -1,0 +1,7 @@
+AES
+CBC
+keystore path
+key_id
+what to do (E/D)
+file to convert
+
