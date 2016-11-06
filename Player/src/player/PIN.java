@@ -50,7 +50,7 @@ public class PIN {
 					frame.setTitle("Wrong PIN, try again");
 					textField.setText("");
 					textField.requestFocus();
-				}				
+				}				 
 			}
 
 		});

@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Player extends Application{
-
+	int i = 0;
 	public static List<Media> playlist;
 	
 	public Player(){
@@ -27,17 +27,33 @@ public class Player extends Application{
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		int i = 0;
+
+		if(i >= playlist.size())
+			return;
+		
 		Group root = new Group();
         Scene scene = new Scene(root, 500, 200);
 		scene.setFill(Paint.valueOf("#170495"));
 
-		Media media = playlist.get(i);
-		MediaPlayer player = new MediaPlayer(media);
-		player.setStartTime(new Duration(100000));
+		MediaPlayer player = new MediaPlayer(playlist.get(i));
+
+		
 		player.play();
-		
-		
+		player.setOnEndOfMedia(new Runnable(){
+
+			@Override
+			public void run() {
+				++i;
+				try {
+					start(primaryStage);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		});
+
 		MediaView mediaView = new MediaView(player);
         ((Group)scene.getRoot()).getChildren().add(mediaView);
 
