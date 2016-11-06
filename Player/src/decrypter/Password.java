@@ -12,6 +12,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
+import sun.applet.Main;
+
 public class Password {
 
 	private static String password = "123";
@@ -40,9 +42,10 @@ public class Password {
 				String pass = textField.getText();
 				if(pass.equals(password)){
 					System.out.println("ok");
-					Test.password = true;
+					PreCrypt.start();
 					frame.setVisible(false);
 					frame.dispose();
+					
 				}
 				else if(failCounter < 2){
 					++failCounter;
@@ -76,5 +79,6 @@ public class Password {
 		frame.setVisible(true);
 
 	}
+
 
 }
