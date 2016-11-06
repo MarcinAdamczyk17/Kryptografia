@@ -2,6 +2,7 @@ package decrypter;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,8 +12,12 @@ import java.io.OutputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -30,57 +35,88 @@ import sun.audio.AudioData;
 
 public class CryptoUtils {
 
-	static File secret = new File("/home/marcin/Programming/krypto/Kryptografia/Player/secret.key");
-	static File file = new File("/home/marcin/Programming/krypto/Kryptografia/Player/my.mp3");
-	static File encryptedFile = new File("/home/marcin/Programming/krypto/Kryptografia/Player/EncFile.encrypted");
-	static File decryptedFile = new File("/home/marcin/Programming/krypto/Kryptografia/Player/DecFile.decrypted");
+	static File secret = new File("secret.key");
+	private static File inputFile;
+	private static File outputFile;
+	private static String scheme;
+	private static String type;
+	private static String keyStorePath;
+	private static String alias;
+	private static int mode;
+	private static String iv = "15101ccc5df148eea4bdd5b4cb3f6b68";
+	private static char[] ksPassword;
+	private static char[] keyPassword;
+	private static IvParameterSpec ivspec;
 	
-	static private IvParameterSpec ivspec;
-	
-	
-	public static void start(){
-		genKey();
-		crypt(Cipher.ENCRYPT_MODE, file, encryptedFile);
-		
-		crypt(Cipher.DECRYPT_MODE, encryptedFile, decryptedFile);
+	public static void setKSPassword(char[] ksp){
+		ksPassword = ksp;
 	}
 	
-	private static void genKey(){
+	public static void setKeyPassword(char[] kp){
+		keyPassword = kp;
+	}
+	
+	public static void start(String[] params){
+		scheme = params[0];
+		type = params[1];
+		keyStorePath = params[2];
+		alias = params[3];
+		inputFile = new File(params[5]);
+		outputFile = new File(params[6]);
 		
+		if(params[4].equals("E"))
+			mode = Cipher.ENCRYPT_MODE;
+		else if(params[4].equals("D"))
+			mode = Cipher.DECRYPT_MODE;
+		else{
+			System.out.println("Wrong mode");
+			return;
+		}
+		
+		Key key = null;
 		try {
-			
-			KeyGenerator keygen = KeyGenerator.getInstance("AES");
-			SecureRandom random = new SecureRandom();
-			keygen.init(random);
-			SecretKey key = keygen.generateKey();
-			ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(secret));
-			
-			byte iv[] = new byte[16];//generate random 16 byte IV AES is always 16bytes
-            random.nextBytes(iv);
-            ivspec = new IvParameterSpec(iv);
-			
-			out.writeObject(key);
-			out.close();
-			
-		} catch (NoSuchAlgorithmException | IOException e) {
+			key = getKey();
+		} catch (KeyStoreException | FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		ivspec = new IvParameterSpec(IV(iv));
+		
+		crypt(mode, inputFile, outputFile, key);
+
 	}
 	
-	private static void crypt(int mode, File input, File output){
+	private static Key getKey() throws KeyStoreException, FileNotFoundException {
+
+		KeyStore ks = KeyStore.getInstance("JCEKS");
+		InputStream is = new FileInputStream(keyStorePath);
 		
 		try {
-			ObjectInputStream keyIn = new ObjectInputStream(new FileInputStream(secret));
-			
-			Key key = (Key) keyIn.readObject();
-			
-			keyIn.close();
-			
+			ks.load(is, ksPassword);
+		} catch (NoSuchAlgorithmException | CertificateException | IOException e) {
+			System.out.println("Probably wrong ks password");
+			e.printStackTrace();
+		}
+		Key key = null;
+		try {
+			key = ks.getKey(alias, keyPassword);
+		} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {
+			System.out.println("Probably wrong key password");
+			e.printStackTrace();
+		}
+		
+		return key;
+		
+	}
+	
+	private static void crypt(int mode, File input, File output, Key key){
+		
+		try {		
 			InputStream in = new FileInputStream(input);
 			OutputStream out = new FileOutputStream(output);
 			
-			Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+			Cipher cipher = Cipher.getInstance(scheme + "/" + type +"/PKCS5Padding");
 			cipher.init(mode, key, ivspec);
 			
 			execute(in, out, cipher);
@@ -88,7 +124,7 @@ public class CryptoUtils {
 			
 			
 			
-		} catch (IOException | ClassNotFoundException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | 
+		} catch (IOException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException | 
 				ShortBufferException | IllegalBlockSizeException | BadPaddingException | InvalidAlgorithmParameterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -121,7 +157,17 @@ public class CryptoUtils {
 			outBytes = cipher.doFinal();
 		out.write(outBytes);
 	}
-
+	
+	private static byte[] IV(String iv){
+		
+		byte[] result = new byte[iv.length() / 2];
+		
+		for(int i = 0; i < result.length; ++i){
+			result[i] = (byte) Integer.parseInt(iv.substring(2*i, 2*i + 2) , 16);
+		}
+		
+		return result;
+	}
  
     
 }

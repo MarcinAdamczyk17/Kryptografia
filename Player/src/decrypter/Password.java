@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -20,8 +21,11 @@ public class Password {
 	private static int failCounter = 0;
 	
 	static JFrame frame;
+	static String msg;
+	static boolean pass1;
 
-	public static void start() {
+	public static void start(String m) {
+
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				displayJFrame();
@@ -30,8 +34,8 @@ public class Password {
 	}
 
 	static void displayJFrame() {
-
-		frame = new JFrame("enter password");
+		pass1 = false;
+		frame = new JFrame(msg);
 
 		JButton confirmButton = new JButton("confirm");
 		JPasswordField textField = new JPasswordField(20);
@@ -40,28 +44,25 @@ public class Password {
 		confirmButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String pass = textField.getText();
-				if(pass.equals(password)){
-					System.out.println("ok");
-					PreCrypt.start();
-					frame.setVisible(false);
-					frame.dispose();
-					
-				}
-				else if(failCounter < 2){
-					++failCounter;
-					System.out.println("wrong");
-					String left = "Wrong password. Attempts left: " + Integer.toString(3 - failCounter);
-					System.out.println(left);
-					frame.setTitle(left);;
-					textField.setText("");
-					textField.requestFocus();
-					
+				if(!pass1){
+					CryptoUtils.setKSPassword(pass.toCharArray());
+					pass1 = true;
 				}
 				else{
-					System.out.println("end");
+					CryptoUtils.setKeyPassword(pass.toCharArray());
 					frame.setVisible(false);
 					frame.dispose();
+					
+					File config = new File("src/decrypter/conf.txt");
+					PreCrypt.start(config);
+
 				}
+				textField.setText("");
+				textField.requestFocus();
+				frame.setTitle("Enter key password:");	
+
+				
+				
 					
 			}
 

@@ -1,7 +1,15 @@
 AES
 CBC
-keystore path
-key_id
-what to do (E/D)
-file to convert
+.keystore
+mykey
+D
+EncFile.encrypted
+dec.mp3
 
+1.Schemat
+2.Tryb
+3.ściezka do key store'a
+4.alias klucza
+5.szyfrowanie/deszyfrowanie (E/D)
+6.plik do przetworzenia
+7.plik wynikowy

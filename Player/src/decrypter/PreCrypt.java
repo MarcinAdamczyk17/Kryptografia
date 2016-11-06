@@ -6,8 +6,8 @@ import java.util.Scanner;
 
 public class PreCrypt {
 
-	public static void start(){
-		File config = new File("src/decrypter/conf.txt");
+	public static void start(File config){
+		
 		
 		@SuppressWarnings("resource")
 		Scanner scanner = null;
@@ -18,11 +18,14 @@ public class PreCrypt {
 			e.printStackTrace();
 		}
 		
-		while(scanner.hasNextLine()){
-			System.out.println(scanner.nextLine());
+		String[] params = new String[7];
+		for(int i = 0; i < 7; ++i){
+			params[i] = scanner.nextLine();
+			System.out.println(params[i]);
 		}
 		
-		CryptoUtils.start();
+		CryptoUtils cu = new CryptoUtils();
+		cu.start(params);
 
 	}
 }
