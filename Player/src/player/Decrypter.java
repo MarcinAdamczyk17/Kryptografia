@@ -4,12 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.security.Key;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Scanner;
 
 import javax.crypto.spec.SecretKeySpec;
 
 import decrypter.CryptoUtils;
 import decrypter.PreCrypt;
+import javafx.scene.media.Media;
 
 public class Decrypter {
 	
@@ -31,22 +34,36 @@ public class Decrypter {
 				params[i] = scanner.nextLine();
 			}
 			
-			PrintWriter writer = new PrintWriter("play/conf.txt");
-			writer.println("AES");
-			writer.println("CBC");
-			writer.println(params[0]);
-			writer.println(params[1]);
-			writer.println("D");
-			writer.println("play/enc.enc");
-			writer.println("play/my.mp3");
+			scanner.close();
 			
-			writer.close();
+			Scanner scan = new Scanner(new File("play/playlist.txt"));
+			List<String> playlist = new LinkedList<String>();			
 			
-			CryptoUtils.setKSPassword(params[2].toCharArray());
-			CryptoUtils.setKeyPassword(params[3].toCharArray());
+			while(scan.hasNextLine()){
+				playlist.add(scan.nextLine());
+			}
 			
-			PreCrypt.start(new File("play/conf.txt"));
-			
+			scan.close();
+			int i = 1;
+			for(String song : playlist){
+				PrintWriter writer = new PrintWriter("play/conf.txt");
+				writer.println("AES");
+				writer.println("CBC");
+				writer.println(params[0]);
+				writer.println(params[1]);
+				writer.println("D");
+				writer.println("play/" + i + ".enc");
+				writer.println("play/" + i + ".mp3");
+				
+				writer.close();
+
+				CryptoUtils.setKSPassword(params[2].toCharArray());
+				CryptoUtils.setKeyPassword(params[3].toCharArray());
+				
+				PreCrypt.start(new File("play/conf.txt"));
+				Startup.playlist.add(new Media("file:/home/marcin/Programming/krypto/Kryptografia/Player/play/" + i + ".mp3"));
+				++i;
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -63,7 +80,7 @@ public class Decrypter {
 		
 		CryptoUtils.setKey(sks);
 		
-		PreCrypt.start(new File("play/encryptStarting.txt"));
+		PreCrypt.start(new File("play/decryptStarting.txt"));
 		System.out.println(keyString.length());
 		
 	}

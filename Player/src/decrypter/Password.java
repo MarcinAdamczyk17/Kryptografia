@@ -25,7 +25,7 @@ public class Password {
 	static boolean pass1;
 
 	public static void start(String m) {
-
+		msg = m;
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				displayJFrame();

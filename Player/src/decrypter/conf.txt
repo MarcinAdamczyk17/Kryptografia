@@ -2,9 +2,9 @@ AES
 CBC
 .keystore
 mykey
-E
-decryptTest/my.mp3
-decryptTest/enc.enc
+D
+decryptTest/2.enc
+decryptTest/2.mp3
 
 1.Schemat
 2.Tryb
