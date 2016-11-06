@@ -9,12 +9,10 @@ public class PreCrypt {
 	public static void start(File config){
 		
 		
-		@SuppressWarnings("resource")
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(config);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -24,8 +22,7 @@ public class PreCrypt {
 			System.out.println(params[i]);
 		}
 		
-		CryptoUtils cu = new CryptoUtils();
-		cu.start(params);
+		CryptoUtils.start(params);
 
 	}
 }

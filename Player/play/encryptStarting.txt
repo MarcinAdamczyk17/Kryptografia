@@ -1,0 +1,7 @@
+AES
+CBC
+null
+null
+D
+play/starting.enc
+play/starting.txt

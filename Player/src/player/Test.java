@@ -7,14 +7,18 @@ import javafx.scene.media.Media;
 
 public class Test {
 
+	public static Media file;
+	
 	public static void main(String[] args) {
 		
 		
-		Media file = new Media("file:/home/marcin/Programming/krypto/Kryptografia/Player/my.mp3");
+		Decrypter decrypt = new Decrypter();
+		file = new Media("file:/home/marcin/Programming/krypto/Kryptografia/Player/play/my.mp3");
 		
 		Player player = new Player();
 		
-		player.play(file);
+		player.play();
+		
 		
 	}
 

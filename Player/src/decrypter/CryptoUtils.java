@@ -35,7 +35,7 @@ import sun.audio.AudioData;
 
 public class CryptoUtils {
 
-	static File secret = new File("secret.key");
+
 	private static File inputFile;
 	private static File outputFile;
 	private static String scheme;
@@ -47,6 +47,8 @@ public class CryptoUtils {
 	private static char[] ksPassword;
 	private static char[] keyPassword;
 	private static IvParameterSpec ivspec;
+	private static Key key = null;
+	private static SecretKeySpec keySpec = null;
 	
 	public static void setKSPassword(char[] ksp){
 		ksPassword = ksp;
@@ -56,6 +58,10 @@ public class CryptoUtils {
 		keyPassword = kp;
 	}
 	
+	public static void setKey(Key k){
+		keySpec = (SecretKeySpec) k;
+	}
+	
 	public static void start(String[] params){
 		scheme = params[0];
 		type = params[1];
@@ -63,7 +69,7 @@ public class CryptoUtils {
 		alias = params[3];
 		inputFile = new File(params[5]);
 		outputFile = new File(params[6]);
-		
+		ivspec = new IvParameterSpec(IV(iv));
 		if(params[4].equals("E"))
 			mode = Cipher.ENCRYPT_MODE;
 		else if(params[4].equals("D"))
@@ -73,17 +79,22 @@ public class CryptoUtils {
 			return;
 		}
 		
-		Key key = null;
-		try {
-			key = getKey();
-		} catch (KeyStoreException | FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		if(keySpec == null){
+			System.out.println("enter");
+			try {
+				key = getKey();
+			} catch (KeyStoreException | FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			crypt(mode, inputFile, outputFile, key);
 		}
-		
-		ivspec = new IvParameterSpec(IV(iv));
-		
-		crypt(mode, inputFile, outputFile, key);
+		else{
+			crypt(mode, inputFile, outputFile, keySpec);
+			keySpec = null;
+		}
+
 
 	}
 	
@@ -98,7 +109,7 @@ public class CryptoUtils {
 			System.out.println("Probably wrong ks password");
 			e.printStackTrace();
 		}
-		Key key = null;
+
 		try {
 			key = ks.getKey(alias, keyPassword);
 		} catch (UnrecoverableKeyException | KeyStoreException | NoSuchAlgorithmException e) {

@@ -1,0 +1,4 @@
+.keystore
+mykey
+123
+456
