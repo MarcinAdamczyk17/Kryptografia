@@ -44,7 +44,7 @@ public class Test {
 		//System.out.println(ks.aliases().nextElement());
 		
 		testStore();
-*/
+		//*/
 
 	}
 

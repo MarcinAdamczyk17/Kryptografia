@@ -69,7 +69,7 @@ public class CryptoUtils {
 		alias = params[3];
 		inputFile = new File(params[5]);
 		outputFile = new File(params[6]);
-		ivspec = new IvParameterSpec(IV(iv));
+		//ivspec = new IvParameterSpec(IV(iv));
 		if(params[4].equals("E"))
 			mode = Cipher.ENCRYPT_MODE;
 		else if(params[4].equals("D"))
@@ -126,10 +126,25 @@ public class CryptoUtils {
 		try {		
 			InputStream in = new FileInputStream(input);
 			OutputStream out = new FileOutputStream(output);
-			
+
 			Cipher cipher = Cipher.getInstance(scheme + "/" + type +"/PKCS5Padding");
-			cipher.init(mode, key, ivspec);
 			
+			if(mode == Cipher.DECRYPT_MODE){
+				byte[] iv = new byte[16];
+				in.read(iv, 0, 16);
+				ivspec = new IvParameterSpec(iv);
+			}
+			else{
+				SecureRandom randomSecureRandom = SecureRandom.getInstance("SHA1PRNG");
+				byte[] iv = new byte[cipher.getBlockSize()];		
+				randomSecureRandom.nextBytes(iv);
+				ivspec = new IvParameterSpec(iv);
+			}
+			
+			cipher.init(mode, key, ivspec);
+			if(mode == Cipher.ENCRYPT_MODE){
+				out.write(cipher.getIV());
+			}
 			execute(in, out, cipher);
 			out.close();
 			
@@ -167,6 +182,7 @@ public class CryptoUtils {
 		else
 			outBytes = cipher.doFinal();
 		out.write(outBytes);
+		
 	}
 	
 	private static byte[] IV(String iv){
@@ -178,6 +194,14 @@ public class CryptoUtils {
 		}
 		
 		return result;
+	}
+	
+	public static void printb(byte[] b){
+		for(int i = 0; i < b.length; ++i){
+			System.out.print((char)b[i] + " ");
+			
+		}
+		System.out.println();
 	}
  
     
