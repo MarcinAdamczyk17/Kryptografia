@@ -19,11 +19,11 @@ public class Decrypter {
 	private static String keyString = "d7a7ae6c4c2ccbc15d5934478e6479c5";
 	
 	public Decrypter(){
-		encryptStarting();
-		encryptFile();
+		decryptStarting();
+		decryptFile();
 	}
 
-	private void encryptFile() {
+	private void decryptFile() {
 		
 		try {
 			Scanner scanner = new Scanner(new File("play/starting.txt"));
@@ -72,7 +72,7 @@ public class Decrypter {
 		
 	}
 
-	private static void encryptStarting() {
+	private static void decryptStarting() {
 		
 		byte[] keyBytes = hexStringToByteArray(keyString);
 		
