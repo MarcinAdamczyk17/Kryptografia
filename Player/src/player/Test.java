@@ -13,6 +13,7 @@ public class Test {
 	
 	public static void main(String[] args) {
 		PIN.start("podaj PIN");
+		//System.out.println(System.getProperty("user.dir"));
 	}
 
 	

@@ -61,7 +61,7 @@ public class Decrypter {
 				CryptoUtils.setKeyPassword(params[3].toCharArray());
 				
 				PreCrypt.start(new File("play/conf.txt"));
-				Startup.playlist.add(new Media("file:/home/marcin/Programming/krypto/Kryptografia/Player/play/" + i + ".mp3"));
+				Startup.playlist.add(new Media("file:" + System.getProperty("user.dir") + "/play/" + i + ".mp3"));
 				++i;
 			}
 		} catch (FileNotFoundException e) {

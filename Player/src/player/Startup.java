@@ -13,8 +13,6 @@ public class Startup {
 	public static void start(){
 		playlist = new LinkedList<Media>();
 		JFXPanel panel = new JFXPanel();
-		//playlist.add(new Media("file:/home/marcin/Programming/krypto/Kryptografia/Player/play/" + 1 + ".mp3"));
-		//playlist.add(new Media("file:/home/marcin/Programming/krypto/Kryptografia/Player/play/" + 2 + ".mp3"));
 
 		Decrypter decrypt = new Decrypter();
 		
