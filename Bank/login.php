@@ -12,15 +12,21 @@ mysql_select_db($db);
 if (isset($_POST['username'])) {
 	$username = $_POST['username'];
 	$password = $_POST['password'];
-	$sql = "SELECT * FROM users WHERE username='".$username."' AND password='".$password."' LIMIT 1";
+	$sql = "SELECT * FROM users WHERE username='".$username."'";
 	$res = mysql_query($sql);
+
 	// If login information is correct
-	if (mysql_num_rows($res) == 1) {
+	$row = mysql_fetch_array($res, MYSQL_ASSOC);
+	if (password_verify($password, $row['password'])) {
+		$options = ['cost' => 11,'salt' => mcrypt_create_iv(22, MCRYPT_DEV_URANDOM),];
+		$sql = "UPDATE users SET password='".password_hash($password, PASSWORD_BCRYPT, $options)."' WHERE username='".$username."'";
+		mysql_query($sql);
+		setcookie("id", $row['id']);
 		header('Location: transfer.php'); 
 		exit();
 	} 
 	else {
-		echo "Invalid login information. Please    to the previous page.";
+		echo "Invalid login information. Please to the previous page.";
 		exit();
 	}
 }

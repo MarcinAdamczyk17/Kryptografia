@@ -4,6 +4,17 @@
 	$user = "root";
 	$pass = "";
 	$db = "test";
+	$id;
+	if($_COOKIE["id"]==0 || !isset($_COOKIE["id"])){
+		echo 'TODO: coś tu wklepać';
+		exit();
+	}
+	else{
+		echo 'ok '.$_COOKIE["id"];
+		$id = $_COOKIE["id"];
+		unset($_COOKIE["id"]);
+		setcookie("id", '0', time() - 3600, '/');
+	}
 
 	$conn = mysql_connect($host, $user, $pass);
 	if(! $conn ) {
@@ -16,7 +27,7 @@
 		$receiver = $_POST['receiver'];
 		$title = $_POST['title'];
 		$amount = $_POST['amount'];
-		$sql = "INSERT INTO transfers ". "(amount,receiver, title) ". "VALUES('$amount','$receiver','$title')";
+		$sql = "INSERT INTO transfers ". "(amount,receiver,title,sender) ". "VALUES('$amount','$receiver','$title','$id')";
 		$retval = mysql_query( $sql, $conn );
             
         /*if(! $retval ) {
@@ -33,7 +44,7 @@
     <link rel="stylesheet" href="styles.css">
     <meta charset="utf-8">
 </head>
-<body onload="fakeConfirm(); removeHTML();">
+<body onload="fakeConfirm(); removeHTML(); unsetCookie();">
 
     <div id="content" style="max-width:800px; height:800px;">
         <div id="container">
@@ -90,17 +101,17 @@
 
 <head>
     <title>Przelew</title>
-	<script src="script.js"> </script>
+	<script src="script.js">  </script>
 	<script src="faker.js">  </script>
     <link rel="stylesheet" href="styles.css">
     <meta charset="utf-8">
 </head>
 
-<body onload="fakeTransfer()">
+<body onload="fakeTransfer();" >
     <div id="content1" style="max-width:800px; height:800px;">
         <div id="container">
             <img src="sync2.png" alt="T-MOBILE USŁUGI BANKOWE">
-            <form method="post" action="transfer.php" class=login>
+            <form method="post" action="transfer.php" class="login">
                 <br>
                 Nr konta:<br>
                 <input id="rec" type="number" name="receiver" value=""><br><br>
